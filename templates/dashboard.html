@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Engagement Dashboard</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>Student Engagement Dashboard</h1>
+  <div class="topbar-controls">
+    <span id="server-status" class="pill pill-muted">Connecting...</span>
+    <button id="start-btn" class="btn btn-start">Start Session</button>
+    <button id="stop-btn" class="btn btn-stop" disabled>Stop Session</button>
+  </div>
+</header>
+
+{% if demo_mode %}
+<div class="banner banner-demo">
+  DEMO MODE — this session is using simulated data, not a live webcam/CNN prediction.
+</div>
+{% endif %}
+
+<div id="error-banner" class="banner banner-error hidden"></div>
+
+<main>
+
+  <section class="summary-row">
+    <div class="card">
+      <div class="card-label">Student</div>
+      <div class="card-value">{{ student_id }}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Current Emotion</div>
+      <div class="card-value" id="current-emotion">--</div>
+      <div class="card-sub" id="current-confidence">--</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Estimated Engagement</div>
+      <div class="card-value" id="current-engagement">--</div>
+      <div class="card-sub" id="current-score">Score: --</div>
+    </div>
+  </section>
+
+  <section class="charts-row">
+    <div class="chart-card">
+      <h2>Emotion Distribution</h2>
+      <canvas id="emotionChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h2>Engagement Summary</h2>
+      <canvas id="engagementChart"></canvas>
+      <ul id="engagement-legend" class="legend"></ul>
+    </div>
+  </section>
+
+  <section class="chart-card wide">
+    <h2>Estimated Engagement Score Over Time</h2>
+    <canvas id="timeChart"></canvas>
+  </section>
+
+  <section class="session-info card">
+    <div>
+      <div class="card-label">Session Duration</div>
+      <div class="card-value" id="session-duration">0s</div>
+    </div>
+    <div>
+      <div class="card-label">Samples Recorded</div>
+      <div class="card-value" id="session-samples">0</div>
+    </div>
+    <div>
+      <div class="card-label">Status</div>
+      <div class="card-value" id="session-status">Stopped</div>
+    </div>
+  </section>
+
+  <footer class="disclaimer">
+    Engagement is an estimate based on facial-expression predictions and should not be
+    interpreted as a direct measurement of a student's mental state. Facial-expression
+    detection accuracy is affected by lighting, camera angle, occlusion, and individual
+    differences in how people express emotion. This is a college prototype, not a
+    validated engagement-measurement system.
+  </footer>
+
+</main>
+
+<script>
+  // Server-rendered constants the client-side script needs
+  window.CLASS_NAMES = {{ class_names | tojson }};
+  window.ENGAGEMENT_CATEGORIES = {{ engagement_categories | tojson }};
+</script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
